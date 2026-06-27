@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, usersTable, insertUserSchema } from "../db/index.js";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "quickbytes_secret";
@@ -30,7 +31,15 @@ router.post("/auth/register", async (req, res) => {
   }
 
   const { password, ...userData } = parsed.data;
-  const [user] = await db.insert(usersTable).values(userData).returning();
+
+const hashedPassword = await bcrypt.hash(password, 10);
+
+const [user] = await db.insert(usersTable)
+  .values({
+    ...userData,
+    password: hashedPassword,
+  })
+  .returning();
 
   const token = jwt.sign(
     { userId: user.id, email: user.email },
@@ -62,6 +71,16 @@ router.post("/auth/login", async (req, res) => {
     .select()
     .from(usersTable)
     .where(eq(usersTable.email, parsed.data.email));
+
+const validPassword = await bcrypt.compare(
+  parsed.data.password,
+  user.password
+);
+
+if (!validPassword) {
+  res.status(401).json({ error: "Invalid password" });
+  return;
+}
 
   if (!user) {
     res.status(401).json({ error: "No account found with this email. Please register first." });

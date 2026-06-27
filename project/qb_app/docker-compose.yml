@@ -3,7 +3,7 @@ services:
     build: 
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: app_frontend
     expose:
       - "5173"
     depends_on:
@@ -14,7 +14,7 @@ services:
     build:  
       context: ./backend
       dockerfile: Dockerfile
-    container_name: qb_app_backend
+    container_name: app_backend
     expose:
       - "5000"
     environment:
@@ -28,7 +28,9 @@ services:
     restart: always
 
   app_db:
-    image: postgres:16-alpine
+    build:
+     context: ./backend/src/db/schema
+     dockerfile: Dockerfile
     container_name: app_db
     environment:
       POSTGRES_USER: postgres

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { eq } from "drizzle-orm";
-import { db, restaurantsTable, insertRestaurantSchema } from "../db";
+import { db, restaurantsTable, insertRestaurantSchema } from "../db/index.js";
 
 const router = Router();
 
@@ -13,7 +13,7 @@ router.get("/restaurants", async (req, res) => {
   }
   if (req.query.isOpen !== undefined) {
     const open = req.query.isOpen === "true";
-    rows = rows.filter((r) => r.isOpen === open);
+    rows = rows.filter((r: any) => r.isOpen === open);
   }
   res.json(rows);
 });

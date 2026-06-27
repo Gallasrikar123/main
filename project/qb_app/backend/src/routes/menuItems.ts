@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { eq } from "drizzle-orm";
-import { db, menuItemsTable, restaurantsTable, insertMenuItemSchema } from "../db";
+import { db, menuItemsTable, restaurantsTable, insertMenuItemSchema } from "../db/index.js";
 import { z } from "zod";
 
 const router = Router();
@@ -12,7 +12,7 @@ router.get("/restaurants/:id/menu-items", async (req, res) => {
   let rows = await db.select().from(menuItemsTable).where(eq(menuItemsTable.restaurantId, restaurantId));
   if (req.query.category) {
     const cat = (req.query.category as string).toLowerCase();
-    rows = rows.filter((m) => m.category.toLowerCase().includes(cat));
+    rows = rows.filter((m: any) => m.category.toLowerCase().includes(cat));
   }
   res.json(rows);
 });

@@ -11,7 +11,7 @@ export const menuItemsTable = pgTable("menu_items", {
   name: text("name").notNull(),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   category: text("category").notNull(),
-  imageUrl: text("image_url"),
+  imageUrl: text("image_url").notNull(),
   isAvailable: boolean("is_available").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
